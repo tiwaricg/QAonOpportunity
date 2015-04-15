@@ -1,0 +1,47 @@
+<apex:page controller="Trek_QAOnOpportunityController" action="{!fetchQuestionAndAnswerOppProduct}">
+	<apex:form >
+		<apex:pageblock >
+			<div style="margin-left: 31px;">
+				<span style="font-size: 17px;font-weight: bold;">QA on Opportunity&nbsp;{!strOpportunityName}</span><br/>
+				<hr/>
+				<div style="margin-top: 16px;">
+					<span style="color: chocolate;font-weight: bold;">Total anwered questions : &nbsp;{!intTotalAnsQues}</span><br/><br/>
+					<span style="color: chocolate;font-weight: bold;">Total unanwered questions : &nbsp;{!intTotalUnAnsQues}</span>
+				</div>
+				<div style="margin-top: 25px;">
+					<table style="width: 75%;">
+						<apex:repeat value="{!lstQuestionsAnswerWrapperToGroup}" var="qa">
+							<tr>
+								<td colspan="3"><span style="color: black;font-weight: bold;font-size: 15px;">{!qa.strProduct}<hr /></span></td>
+							</tr>
+							<apex:variable var="i" value="{!1}"/>
+							<apex:repeat value="{!qa.lstQuestionsAnswerWrapper}" var="queAns">
+								<tr>
+									<td><div style="color: chocolate;font-weight: bold;">Ques:&nbsp;{!i}</div></td>
+									<td><div ><apex:outputText value="{!queAns.objQues.Ques__c}" id="queOpTextId" style="font-weight: bold;"/></div></td>
+								</tr>
+								<tr>
+									<td><div style="color: chocolate;font-weight: bold;margin-bottom: 10px">Ans:&nbsp;</div></td>
+									<td><div><apex:inputTextArea value="{!queAns.objAns.Answer__c}" style="width:313px;"/></div></td>
+								</tr>
+								<apex:variable var="i" value="{!i+1}"/>
+							</apex:repeat>
+							<tr>
+								<td><div style="margin-bottom: 28px;"/></td>
+							</tr> 
+						</apex:repeat>
+				     </table>
+			     </div>
+			     <hr/>
+			     <input style="margin-left: 289px;" type="button"  class="btn" value="Back to Opportunity" onclick="backToOppButton()"/>
+			</div>		     
+		</apex:pageblock>
+	</apex:form>
+	<script>
+		/* Redirect page to respective opportunity detail page onclick of back button  */
+          function backToOppButton()
+          {
+              window.location.href = '/{!$CurrentPage.parameters.id}';  
+          }
+	</script>
+</apex:page>
