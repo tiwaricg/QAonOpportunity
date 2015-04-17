@@ -1,62 +1,57 @@
 <apex:page controller="Trek_QAOnOpportunityController" action="{!fetchQuestionAndAnswerOppProduct}">
 	<apex:form >
-		<style>
-		</style>
 		<apex:outputpanel id="optId">
-		<apex:pageblock >
-			<div style="margin-left: 31px;">
-				<span style="font-size: 17px;font-weight: bold;">QA on Opportunity&nbsp;{!strOpportunityName}</span><br/>
-				<hr/>
-				<div style="margin-top: 16px;">
-					<span style="color: chocolate;font-weight: bold;">Total answered questions : &nbsp;{!intTotalAnsQues}</span><br/><br/>
-					<span style="color: chocolate;font-weight: bold;">Total unanswered questions : &nbsp;{!intTotalUnAnsQues}</span>
-				</div>
-				
-				<div style="margin-top: 25px;">
-					<table style="width: 75%;">
-						<apex:variable var="count" value="{!2}"/>
-						<apex:repeat value="{!lstQuestionsAnswerWrapperToGroup}" var="qa">
-							<tr>
-								<td colspan="3"><span style="color: black;font-weight: bold;font-size: 15px;">{!qa.strProduct}<hr /></span></td>
-							</tr>
-							<apex:variable var="i" value="{!1}"/>
-							<apex:repeat value="{!qa.lstQuestionsAnswerWrapper}" var="queAns">
+			<apex:pageMessages id="ErrorMessage" />
+			<apex:pageblock >
+				<div style="margin-left: 31px;">
+					<span style="font-size: 17px;font-weight: bold;">QA on Opportunity&nbsp;{!strOpportunityName}</span><br/>
+					<hr/>
+					<div style="margin-top: 16px;">
+    					<span style="color: chocolate;font-weight: bold;">Total answered questions : &nbsp;{!intTotalAnsQues}</span><br/><br/>
+    					<span style="color: chocolate;font-weight: bold;">Total unanswered questions : &nbsp;{!intTotalUnAnsQues}</span>
+					</div>
+					
+					<div style="margin-top: 25px;">
+						<table style="width: 75%;">
+							<!-- Iterate over the Product of All Group -->
+							<apex:repeat value="{!lstQuestionsAnswerWrapperToGroup}" var="qa">
 								<tr>
-									<td style="vertical-align: middle;"><div style="color: chocolate;font-weight: bold;">Ques:&nbsp;{!i}</div></td>
-									<td style="vertical-align: middle;"><div ><apex:outputText value="{!queAns.objQues.Ques__c}" id="queOpTextId" style="font-weight: bold;"/></div></td>
+									<td colspan="3"><span style="color: black;font-weight: bold;font-size: 15px;">{!qa.strProduct}<hr /></span></td>
 								</tr>
-								<tr>
-									<td style="vertical-align: middle;"><div style="color: chocolate;font-weight: bold;margin-bottom: 10px">Ans:&nbsp;</div></td>
-									<td>
+								<apex:variable var="i" value="{!1}"/>
+								<!-- Iterate over the list of questions related to product as per product group -->
+								<apex:repeat value="{!qa.lstQuestionsAnswer}" var="answer">
+									<tr>
+										<td style="vertical-align: middle;"><div style="color: chocolate;font-weight: bold;">Ques:&nbsp;{!i}</div></td>
+										<td style="vertical-align: middle;"><div ><apex:outputText value="{!answer.QuesId__r.Ques__c}" id="queOpTextId" style="font-weight: bold;"/></div></td>
+									</tr>
+									<tr>
+										<td style="vertical-align: middle;"><div style="color: chocolate;font-weight: bold;margin-bottom: 10px">Ans:&nbsp;</div></td>
+										<td>
 											<div>
-											<span>{!queAns.objAns.Id}</span><br/>
-												<apex:inputField value="{!queAns.objAns.Answer__c}" rendered="{!queAns.objQues.Type__c == 'Text'}" style="width: 420px;max-width:420px;max-height: 28px;"/>
-												<apex:outputPanel rendered="{!queAns.objQues.Type__c == 'Boolean'}">
-													<input type="radio" name="address" value="True" onclick="setSelectedAddress(this.value)">True</input>&nbsp;
-													<input type="radio" name="address" value="False" onclick="setSelectedAddress(this.value)">False</input>
-												</apex:outputPanel>
-												<apex:inputField value="{!queAns.objAns.Values__c}" rendered="{!queAns.objQues.Type__c == 'Picklist'}"/>
-										</div>
-									</td>
-								</tr>
-								<apex:variable var="i" value="{!i+1}"/>
+												<apex:inputField value="{!answer.Answer__c}" rendered="{!answer.QuesId__r.Type__c == 'Text'}" style="width: 420px;max-width:420px;max-height: 28px;"/>
+												<apex:inputField value="{!answer.True_False__c}" rendered="{!answer.QuesId__r.Type__c == 'Boolean'}"/> 
+												<apex:inputField value="{!answer.Values__c}" rendered="{!answer.QuesId__r.Type__c == 'Picklist'}"/>
+											</div>
+										</td>
+									</tr>
+									<apex:variable var="i" value="{!i+1}"/>
+								</apex:repeat>
+								<tr>
+									<td><div style="margin-bottom: 28px;"/></td>
+								</tr> 
 							</apex:repeat>
-							<tr>
-								<td><div style="margin-bottom: 28px;"/></td>
-							</tr> 
-							<apex:variable var="count" value="{!count+1}"/>
-						</apex:repeat>
-				     </table>
-			     </div>
-			     <hr/>
-			     <input style="margin-left: 289px;" type="button"  class="btn" value="Back to Opp" onclick="backToOppButton()"/>
-			     <input style="margin-left: 50px;" type="button"  class="btn" value="Save" onclick="saveAnswerAF();"/>
-			</div>		     
-		</apex:pageblock>
+					     </table>
+				     </div>
+				     <hr/>
+				     <input style="margin-left: 289px;" type="button"  class="btn" value="Back to Opp" onclick="backToOppButton()"/>
+				     <input style="margin-left: 50px;" type="button"  class="btn" value="Save" onclick="saveAnswerAF();"/>
+				</div>		     
+			</apex:pageblock>
 		</apex:outputpanel>
-		<apex:actionfunction name="saveAnswerAF" action="{!saveAnswer}" status="loading" rerender="optId,loading">
-<!--     		<apex:param name="index" assignTo="{!rowIndex}" value=""/> -->
-    	</apex:actionfunction>
+		<!-- Start - Action Function -->
+		<apex:actionfunction name="saveAnswerAF" action="{!saveAnswer}" status="loading" rerender="optId,loading,ErrorMessage"/>
+    	<!-- End - Action Function-->
     	<!-- Start - For  Loading symbol  -->
 	    <apex:actionstatus id="loading">
 	        <apex:facet name="start">
